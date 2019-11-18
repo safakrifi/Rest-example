@@ -87,5 +87,7 @@ Exemple: /user/1
  OUT:    
 HTTP CODE: 204
 
+#version V2.0
 
+We need to install Mysql and prepare a test databse
 

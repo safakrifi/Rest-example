@@ -54,7 +54,7 @@ job:"Student"
   =>récupérer un seul utilisateur par id
 Exemple: /user/2
  OUT:    
-HTTP CODE: 200
+HTTP CODE: 302
 { 
 id:2
 firstName:"Jammy",
@@ -73,7 +73,7 @@ lastName:"SNOW",
 job:"Engineer"
 }
 OUT:
-HTTP CODE: 201
+HTTP CODE: 200
 { 
 id:1
 firstName:"John",
@@ -85,7 +85,9 @@ job:"Engineer"
 =>suppression d'un seul utilisateur par id  
 Exemple: /user/1
  OUT:    
-HTTP CODE: 204
+HTTP CODE: 410
 
+#version V2.0
 
+We need to install Mysql and prepare a test databse
 

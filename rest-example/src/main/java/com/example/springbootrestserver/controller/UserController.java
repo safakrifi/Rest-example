@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
+import com.example.springbootrestserver.exception.BeanNotFoundException;
 import com.example.springbootrestserver.model.User;
 import com.example.springbootrestserver.service.UserService;
 
@@ -31,13 +31,25 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
-	// @Autowired
-	// private RoleService roleService;
+	
+	@DeleteMapping(value = "/users/{id}")
+	public ResponseEntity<Void> deleteUser(@PathVariable(value = "id") Long id) {
+		userService.deleteUser(id);
+		return new ResponseEntity<Void>(HttpStatus.GONE);
+	}
+
+	@GetMapping(value = "/users/{id}")
+	public ResponseEntity<User> findUserById(@PathVariable("id") Long id) throws BeanNotFoundException {
+		User user = userService.getUserById(id);
+		if (user == null)
+			throw new BeanNotFoundException("user with id : " + id + " cannot be Found");
+
+		return new ResponseEntity<User>(user, HttpStatus.FOUND);
+	}
 
 	@GetMapping(value = "/users")
 	public ResponseEntity<Collection<User>> getAllUsers() {
 		Collection<User> users = userService.getAllUsers();
-
 		{
 			logger.info("liste des utilisateurs : " + users.toString());
 		}
@@ -53,33 +65,19 @@ public class UserController {
 		return new ResponseEntity<User>(user, HttpStatus.CREATED);
 	}
 
-	@GetMapping(value = "/users/{id}")
-	public ResponseEntity<User> findUserById(@PathVariable("id") Long id) {
-		User user = userService.getUserById(id);
-		logger.debug("Utilisateur trouvé : " + user);
-		return new ResponseEntity<User>(user, HttpStatus.FOUND);
-	}
-
 	@PutMapping(value = "/users/{id}")
 	public ResponseEntity<User> updateUser(@PathVariable(value = "id") Long id, @RequestBody User user) {
 
 		User userToUpdate = userService.getUserById(id);
 		if (userToUpdate == null) {
-			logger.debug("L'utilisateur avec l'identifiant " + id + " n'existe pas");
-			return new ResponseEntity<User>(user, HttpStatus.NOT_FOUND);
+			throw new BeanNotFoundException("user: " + id + " not Found");
 		}
-
-		// logger.info("UPDATE ROLE: "+userToUpdate.getRoles().toString());
 		userToUpdate.setFirstName(user.getFirstName());
 		userToUpdate.setLastName(user.getLastName());
 		userToUpdate.setJob(user.getJob());
-		User userUpdated = userService.saveOrUpdateUser(userToUpdate);
-		return new ResponseEntity<User>(userUpdated, HttpStatus.OK);
-	}
 
-	@DeleteMapping(value = "/users/{id}")
-	public ResponseEntity<Void> deleteUser(@PathVariable(value = "id") Long id) {
-		userService.deleteUser(id);
-		return new ResponseEntity<Void>(HttpStatus.GONE);
+		User userUpdated = userService.saveOrUpdateUser(userToUpdate);
+
+		return new ResponseEntity<User>(userUpdated, HttpStatus.OK);
 	}
 }

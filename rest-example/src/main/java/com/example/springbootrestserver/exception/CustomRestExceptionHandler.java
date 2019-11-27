@@ -7,6 +7,7 @@ import java.util.List;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
+
 
 @RestController
 @ControllerAdvice
@@ -70,7 +72,7 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 					+ violation.getMessage());
 		}
 
-		ApiError apiError = new ApiError(new Date(),HttpStatus.BAD_REQUEST, ex.getLocalizedMessage(), errors,request.getDescription(false));
+		ApiError apiError = new ApiError(new Date(),HttpStatus.BAD_REQUEST,"could not execute statement:attribute error ", errors,request.getDescription(false));
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
 
@@ -89,7 +91,18 @@ public class CustomRestExceptionHandler extends ResponseEntityExceptionHandler {
 		ApiError apiError = new ApiError(new Date(),HttpStatus.BAD_REQUEST, error, errormessage,request.getDescription(false));
 		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
 	}
+	
+	//when the data entered is missing a field 
+	@ExceptionHandler({ DataIntegrityViolationException.class })
+	public ResponseEntity<Object> handleJdbcSQLException(DataIntegrityViolationException ex,
+			WebRequest request) {
+		
+		String error = ex.getCause().getLocalizedMessage();
 
+		ApiError apiError = new ApiError(new Date(),HttpStatus.BAD_REQUEST, error, ex.getRootCause().getLocalizedMessage(),request.getDescription(false));
+		return new ResponseEntity<Object>(apiError, new HttpHeaders(), apiError.getStatus());
+	}
+	//
 	@Override
 	protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(HttpRequestMethodNotSupportedException ex,
 			HttpHeaders headers, HttpStatus status, WebRequest request) {

@@ -87,7 +87,14 @@ Exemple: /user/1
  OUT:    
 HTTP CODE: 410
 
-#version V2.0
+# version V2.0
 
 We need to install Mysql and prepare a test databse
 
+# version V3.0
+
+Error management : Spring boot exception management
+
+# version V4.0
+
+Authentification : used Spring boot Security

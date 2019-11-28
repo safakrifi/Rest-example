@@ -3,9 +3,16 @@ package com.example.springbootrestserver.dto;
 
 import java.io.Serializable;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 public class UserDTO implements Serializable {
 
 	private static final long serialVersionUID = -443589941665403890L;
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserDTO.class);
+
 
 	private String firstName;
 
@@ -73,6 +80,7 @@ public class UserDTO implements Serializable {
 
 	@Override
 	public String toString() {
+		logger.info("UserDTO format ");
 		return String.format("[id=%s, firstName=%s, lastName=%s, job=%s]", id, firstName, lastName, job);
 	}
 

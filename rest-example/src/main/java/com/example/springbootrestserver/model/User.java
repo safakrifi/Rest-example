@@ -138,6 +138,7 @@ public class User implements Serializable {
 		return result;
 	}
 
+	// user comparator
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)

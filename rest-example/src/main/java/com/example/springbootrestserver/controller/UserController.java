@@ -35,6 +35,7 @@ public class UserController {
 	@DeleteMapping(value = "/users/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable(value = "id") Long id) {
 		userService.deleteUser(id);
+		logger.info("user with id:"+id +" is deleted");
 		return new ResponseEntity<Void>(HttpStatus.GONE);
 	}
 
@@ -44,6 +45,7 @@ public class UserController {
 		if (user == null)
 			throw new BeanNotFoundException("user with id : " + id + " cannot be Found");
 
+		logger.info("user found :"+ user.toString());
 		return new ResponseEntity<User>(user, HttpStatus.FOUND);
 	}
 
@@ -77,6 +79,8 @@ public class UserController {
 		userToUpdate.setJob(user.getJob());
 
 		User userUpdated = userService.saveOrUpdateUser(userToUpdate);
+		
+		logger.info("updated user info"+ userUpdated.toString());
 
 		return new ResponseEntity<User>(userUpdated, HttpStatus.OK);
 	}

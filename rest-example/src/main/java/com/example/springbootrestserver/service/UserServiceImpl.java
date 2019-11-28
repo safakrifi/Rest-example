@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.springboot.rest.server.dao.UserRepository;
-import com.example.springbootrestserver.exception.BeanNotFoundException;
 import com.example.springbootrestserver.model.User;
 
 @Service(value = "userService")// l'annotation @Service est optionnelle ici, car il n'existe qu'une seule implémentation de l'interface UserService

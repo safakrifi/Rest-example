@@ -8,6 +8,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -18,7 +22,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import com.example.springbootrestserver.exception.BeanNotFoundException;
+import com.example.springbootrestserver.jwt.JWTUtil;
+import com.example.springbootrestserver.jwt.models.AuthenticationRequest;
+import com.example.springbootrestserver.jwt.models.AuthenticationResponse;
 import com.example.springbootrestserver.model.User;
 import com.example.springbootrestserver.service.UserService;
 
@@ -31,6 +40,28 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private AuthenticationManager authenticationManager;
+	
+	@Autowired
+	private JWTUtil jwtTokenUtil;
+	
+	// JWT Authentification 
+	@RequestMapping (value="/authenticate",method =RequestMethod.POST)
+	public ResponseEntity<?> createAuthentificationToken(@RequestBody AuthenticationRequest authenticationRequest)throws Exception {
+		
+		System.out.println("authentication request user name and password are :"+authenticationRequest.getUserName()+"/"+authenticationRequest.getPassword());
+		try {
+		authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getUserName(),authenticationRequest.getPassword()));
+		}catch (BadCredentialsException e) {
+			throw new Exception ("incorrect username or password",e);
+		}
+		final UserDetails userDetails = userService.loadUserByUsername(authenticationRequest.getUserName());
+		final String jwt =jwtTokenUtil.generateToken(userDetails);
+		return ResponseEntity.ok(new AuthenticationResponse(jwt));
+		
+	}
 	
 	@DeleteMapping(value = "/users/{id}")
 	public ResponseEntity<Void> deleteUser(@PathVariable(value = "id") Long id) {
@@ -49,6 +80,15 @@ public class UserController {
 		return new ResponseEntity<User>(user, HttpStatus.FOUND);
 	}
 
+	@GetMapping(value = "/users/login/{username}")
+	public ResponseEntity<User> findUserByName(@PathVariable("username") String username)  {
+		User user =  userService.loadUserByUserLogin(username);
+		if (user == null)
+			throw new BeanNotFoundException("user with username: " + username + " cannot be Found");
+
+		logger.info("user found :"+ user.toString());
+		return new ResponseEntity<User>(user, HttpStatus.FOUND);
+	}
 	@GetMapping(value = "/users")
 	public ResponseEntity<Collection<User>> getAllUsers() {
 		Collection<User> users = userService.getAllUsers();

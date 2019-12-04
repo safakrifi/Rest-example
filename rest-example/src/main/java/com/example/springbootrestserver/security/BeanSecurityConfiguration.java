@@ -1,62 +1,58 @@
 package com.example.springbootrestserver.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-// websecurity configuration
-  
+import com.example.springbootrestserver.jwt.filters.JwtRequestFilter;
+import com.example.springbootrestserver.service.UserService;
+
+// JWT websecurity configuration
+
 @Configuration
 @EnableWebSecurity
-public  class BeanSecurityConfiguration extends  WebSecurityConfigurerAdapter   {
+public class BeanSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-   @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        return bCryptPasswordEncoder;
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+    private JwtRequestFilter jwtRequestFilter;
+	
+
+	@Override
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(userService);
+		
+	}
+
+	@Override
+	protected void configure(HttpSecurity http) throws Exception {
+
+		http.csrf().disable().authorizeRequests().antMatchers("/user/authenticate").permitAll().anyRequest()
+				.authenticated().and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+	http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+	}
+
+	
+	@Override
+    @Bean
+    public AuthenticationManager authenticationManagerBean ()throws Exception{
+    	return super.authenticationManagerBean();
     }
-
-    @Override
-    public void configure(WebSecurity web) throws Exception {
-        web.ignoring().antMatchers("/resources/**");
-    }
-
-   @Override
-    protected void configure(AuthenticationManagerBuilder auth)
-      throws Exception {
-        auth.inMemoryAuthentication()
-        .withUser("user")
-            .password("password")
-            .roles("USER")
-            .and()
-          .withUser("admin")
-            .password("admin")
-            .roles("USER", "ADMIN");
-    }
-  
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        http.authorizeRequests().antMatchers("/").permitAll().antMatchers("/users")
-            .hasAnyRole("USER", "ADMIN").antMatchers("/users").hasAnyRole("USER", "ADMIN")
-            .antMatchers("/user").hasAnyRole("ADMIN").anyRequest().authenticated().and().formLogin()
-            .permitAll().and().logout().permitAll();
-        http.httpBasic()
-        .and()
-        .authorizeRequests()
-        .antMatchers("/user/*")
-        .hasAnyRole("USER", "ADMIN")
-        .antMatchers("/users/*")
-        .hasAnyRole("USER", "ADMIN")
-        .and()
-        .formLogin().permitAll();
-
-        http.csrf().disable();
-    }
-
- 
+	@Bean
+	public PasswordEncoder passwordEncoder () {
+		return NoOpPasswordEncoder.getInstance();
+	}
 }

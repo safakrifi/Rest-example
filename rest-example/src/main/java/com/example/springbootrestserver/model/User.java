@@ -5,6 +5,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.example.springbootrestserver.dto.UserDTO;
+
 @Entity
 @Table(name = "UTILISATEUR")
 @XmlRootElement(name = "user")
@@ -29,6 +31,11 @@ public class User implements Serializable {
 	@Column(name = "JOB", insertable = true, updatable = true, nullable = false)
 	private String job;
 
+	@Column(name = "USERNAME", insertable = true, updatable = true, nullable = false)
+	private String username;
+	
+	@Column(name = "PASSWORD", insertable = true, updatable = true, nullable = false)
+	private String password;
 	public User() {
 		super();
 	}
@@ -48,17 +55,20 @@ public class User implements Serializable {
 		this.firstName = firstName;
 	}
 
-	/*
-	 * public User(UserDTO userDTO) { this.setId(userDTO.getId()); //
-	 * this.setFirstName(userDTO.getFirstName()); //
-	 * this.setLastName(userDTO.getLastName()); }
-	 */
+	
+	 public User(UserDTO userDTO) { 
+	this.setId(userDTO.getId()); //
+	 this.setFirstName(userDTO.getFirstName()); //
+	 this.setLastName(userDTO.getLastName()); 
+	 this.setusername(userDTO.getusername());
+	 this.setPassword(userDTO.getPassword());}
+	 
 
-	/*
-	 * public User(UserRegistrationForm userRegistrationForm) {
-	 * this.setLogin(userRegistrationForm.getLogin());
-	 * this.setPassword(userRegistrationForm.getPassword()); }
-	 */
+	
+	/* public User(UserRegistrationForm userRegistrationForm) {
+	 this.setLogin(userRegistrationForm.getLogin());
+	 this.setPassword(userRegistrationForm.getPassword()); }*/
+	 
 	public User(Long id, String firstName, String lastName, String job) {
 		this.id = id;
 		this.firstName = firstName;
@@ -75,20 +85,23 @@ public class User implements Serializable {
 		this.id = id;
 	}
 
-	/*
-	 * public String getLogin() { return login; }
-	 * 
-	 * @XmlElement public void setLogin(String login) { this.login = login; }
-	 * 
-	 * public String getPassword() { return password; }
-	 * 
-	 * @XmlElement public void setPassword(String password) { this.password =
-	 * password; }
-	 * 
-	 * public Integer getActive() { return active; }
-	 * 
-	 * @XmlElement public void setActive(Integer active) { this.active = active; }
-	 */
+	
+	 public String getusername() { return username; }
+	 
+	 @XmlElement 
+	 public void setusername(String login) { this.username = login; }
+	  
+	  
+	 public String getPassword() { return password; }
+	  
+	  @XmlElement 
+	  public void setPassword(String password) { this.password =
+	 password; }
+	  
+	/*  public Integer getActive() { return active; }
+	  
+	  @XmlElement public void setActive(Integer active) { this.active = active; }*/
+	 
 	public String getFirstName() {
 		return firstName;
 	}
@@ -123,7 +136,7 @@ public class User implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", first Name=" + firstName + ", Last Name=" + lastName + ", Job=" + job + "]";
+		return "User [id=" + id + ", first Name=" + firstName + ", Last Name=" + lastName + ", Job=" + job +"username "+username+ "]";
 	}
 
 	@Override
@@ -134,6 +147,8 @@ public class User implements Serializable {
 		result = prime * result + ((firstName == null) ? 0 : firstName.hashCode());
 		result = prime * result + ((lastName == null) ? 0 : lastName.hashCode());
 		result = prime * result + ((job == null) ? 0 : job.hashCode());
+		result = prime * result + ((username == null) ? 0 : username.hashCode());
+		result = prime * result + ((password == null) ? 0 : password.hashCode());
 		// result = prime * result + ((roles == null) ? 0 : roles.hashCode());
 		return result;
 	}
@@ -168,7 +183,16 @@ public class User implements Serializable {
 				return false;
 		} else if (!job.equals(other.job))
 			return false;
-
+		if (username == null) {
+			if (other.username != null)
+				return false;
+		} else if (!username.equals(other.username))
+			return false;
+		if (password == null) {
+			if (other.password != null)
+				return false;
+		} else if (!password.equals(other.password))
+			return false;
 		return true;
 	}
 }

@@ -15,10 +15,11 @@ public class UserDTO implements Serializable {
 
 
 	private String firstName;
-
 	private Long id;
 	private String job;
 	private String lastName;
+	private String username;
+	private String password;
 
 	public UserDTO() {
 	}
@@ -77,11 +78,30 @@ public class UserDTO implements Serializable {
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
+	
+	
+	
+
+	public String getusername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
 	@Override
 	public String toString() {
 		logger.info("UserDTO format ");
-		return String.format("[id=%s, firstName=%s, lastName=%s, job=%s]", id, firstName, lastName, job);
+		return String.format("[id=%s, firstName=%s, lastName=%s, job=%s, username=%]", id, firstName, lastName, job, username);
 	}
 
 }

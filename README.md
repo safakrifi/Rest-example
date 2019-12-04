@@ -97,4 +97,8 @@ Error management : Spring boot exception management
 
 # version V4.0
 
-Authentification : used Spring boot Security
+Authentication : used Spring boot Security
+
+# version V5.0
+
+Spring Security + JWT 

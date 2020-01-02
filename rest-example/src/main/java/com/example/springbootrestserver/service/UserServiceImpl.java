@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +24,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
     
-  //  @Autowired
-  //  private BCryptPasswordEncoder bCryptPasswordEncoder;
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
     public Collection<User> getAllUsers() {
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(readOnly=false)
     public User saveOrUpdateUser(User user) {
-   //     user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
@@ -65,15 +66,13 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 	
-		System.out.println("were at 1");
+		
 		Collection<User> users = getAllUsers();
 		User user = users.stream()
 				  .filter(customer -> username.equalsIgnoreCase(customer.getusername()))
 				  .findAny()
-				  .orElse(null);
-		System.out.println("were at 2:");
-		System.out.println("userDetails are username /"+user.getusername());
-		System.out.println("userDetails are password /" +user.getPassword());
+				  .orElse(null);	
+		logger.info("loadUserByName:"+user.getusername());
 
 		return  new org.springframework.security.core.userdetails.User(user.getusername(),user.getPassword(),new ArrayList<>()) ;
 	}

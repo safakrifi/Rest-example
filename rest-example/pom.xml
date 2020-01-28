@@ -19,11 +19,13 @@
     </parent>
 
     <properties>
+    
         <start-class>com.example.restclient.com.example.springbootrestserver.SpringbootRestserverApplication</start-class>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <java.version>1.8</java.version>
         <tomcat.version>8.0.41</tomcat.version><!-- This override default embedded Tomcat  -->
+            <maven.compiler.target>1.8</maven.compiler.target>
+           <maven.compiler.source>1.8</maven.compiler.source>
         <maven.test.skip>true</maven.test.skip>
     </properties>
 
@@ -109,6 +111,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+           <plugin>
+    <groupId>org.apache.maven.plugins</groupId>
+    <artifactId>maven-compiler-plugin</artifactId>
+    <configuration>
+        <release>8</release>
+        <verbose>true</verbose>
+    </configuration>
+</plugin>
         </plugins>
     </build>
 

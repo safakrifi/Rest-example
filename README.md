@@ -1,5 +1,5 @@
 # Rest-example
-This is a spring boot app as an excerce that uses API rest services.
+This is a spring boot based web application that uses API rest services.
 # Installation
 mvn clean 
 
